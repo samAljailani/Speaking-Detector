@@ -1,11 +1,12 @@
 const videoElement = document.getElementsByClassName('input_video')[0];
 const canvasElement = document.getElementsByClassName('output_canvas')[0];
 const canvasCtx = canvasElement.getContext('2d');
-const sampleIntervalDuration = 350;
+const sampleIntervalDuration = 300;
 const frequencyIntervalDuration = 1000;
 const threshold = 0.003;
+let wasTalking = false;
 let isTalking = false;
-let currentInterval = 0
+let currentInterval = 0;
 let currentIntervalData = new Array();
 let dataPoints = new Array(20);
 for(let i = 0; i < 20; ++i){
@@ -44,7 +45,7 @@ function onResults(results) {
 
     canvasCtx.drawImage(
         results.image, 0, 0, canvasElement.width, canvasElement.height);
-    if(isTalking){
+    if(isTalking || wasTalking){
         let percentage = speakingFrequency.pointsGreaterThanThreshold / speakingFrequency.maxNumberOfPoints;
         console.log(percentage); 
         canvasCtx.rect(10,10, canvasElement.width * percentage * 0.75, 100)
@@ -55,16 +56,18 @@ function onResults(results) {
         for (const landmarks of results.multiFaceLandmarks) {
             if(new Date().getTime() > currentInterval){
                 if(userIsTalking()){
+                    wasTalking = isTalking;
                     isTalking = true;
                 }else{
                     speakingFrequency.pointsGreaterThanThreshold = 0;
                     speakingFrequency.points = dataPoints;
                     speakingFrequency.frontOfQueue = 0;
+                    wasTalking = isTalking
                     isTalking = false;
                 }
                 currentInterval = new Date().getTime()+ sampleIntervalDuration;
             }
-            if(isTalking){
+            if(isTalking || wasTalking){
                 canvasCtx.fillStyle = "#000000";
                 canvasCtx.font = "40px Verdana";
                 canvasCtx.fillText("Talking", 15, 70);
