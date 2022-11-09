@@ -1,14 +1,19 @@
 const videoElement = document.getElementsByClassName('input_video')[0];
 const canvasElement = document.getElementsByClassName('output_canvas')[0];
 const canvasCtx = canvasElement.getContext('2d');
-const sampleIntervalDuration = 250;
-const frequencyIntervalDuration = 1000;
+const sampleIntervalDuration = 200;
+const cvsExportInterval = 1000; //export row every second
+let row = [];
+let csvData = [];
+let col = 0;
 const threshold = 0.003;
-let wasTalking = false;
-let isTalking = false;
+let mouthWasMoving      = false;
+let mouthIsMoving       = false;
+let startCollectingData = false;
 let currentInterval = 0;
 let currentIntervalData = new Array();
 let dataPoints = new Array(20);
+let isTalking = false;
 for(let i = 0; i < 20; ++i){
     dataPoints[i] = [{}, false];
 }
@@ -59,23 +64,43 @@ function onResults(results) {
             drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_IRIS, {color: '#E0E0E0'});
             drawConnectors(canvasCtx, landmarks, FACEMESH_TESSELATION, {color: '#C0C0C070', lineWidth: 1});
             drawConnectors(canvasCtx, landmarks, FACEMESH_FACE_OVAL, {color: '#E0E0E0'});
-            drawConnectors(canvasCtx, landmarks, FACEMESH_LIPS, {color: (isTalking || wasTalking ? '#00FF00': '#E0E0E0')});
+            drawConnectors(canvasCtx, landmarks, FACEMESH_LIPS, {color: (mouthIsMoving || mouthWasMoving ? '#00FF00': '#E0E0E0')});
         }
     }
-    //checking if the user is still talking
+    //checking if the user is talking
     if(new Date().getTime() > currentInterval){
-        if(userIsTalking()){
-            wasTalking = isTalking;
-            isTalking = true;
+        if(usermouthIsMoving()){
+            mouthWasMoving = mouthIsMoving;
+            mouthIsMoving = true;
         }else{
-            wasTalking = isTalking
-            isTalking = false;
+            mouthWasMoving = mouthIsMoving
+            mouthIsMoving = false;
+        }
+        if(audioHasChanged()){
+            audioRecentlyChanged = audioChanged;
+            audioChanged = true;
+            
+        }else{
+            audioRecentlyChanged = audioChanged;
+            audioChanged = false;
+        }
+        isTalking = (mouthIsMoving || mouthWasMoving) && (audioChanged || audioRecentlyChanged);
+        if(startCollectingData){
+            row.push(isTalking? "1":"0");
+            if(row.length == 5){
+                csvData.push(row);
+                row = [];
+            }
         }
         currentInterval = new Date().getTime()+ sampleIntervalDuration;
     }
+    // if(new Date().getTime() > cvsExportInterval && row.length == 5){
+    //     exportRow();
+    //     cvsExportInterval = newDate().getTime() + 1000;
+    // }
     //outputing to the canvas whether the client is talking or not
     canvasCtx.rect(10,10, canvasElement.width * .30, 100);
-    if(isTalking || wasTalking){
+    if(isTalking){
         canvasCtx.fillStyle = "rgba(0, 255,255, 0.7)";//0.7
         canvasCtx.fill();
         canvasCtx.fillStyle = "#000000";
@@ -94,7 +119,7 @@ function onResults(results) {
 function distanceBetweenTwoPoints(p1,p2){
     return Math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2 , (p1.z - p2.z)**2 )
 } 
-function userIsTalking(){
+function usermouthIsMoving(){
     let result = false;
     let newMean          = meanCalculator(currentIntervalData);
     let MAD   = meanAbsoluteDeviation(currentIntervalData, newMean);
@@ -137,7 +162,17 @@ function meanAbsoluteDeviation(arr, mean){
 function XYZPointDistances(p1,p2){
     return {x: p1.x - p2.x, y: p1.y - p2.y, z: p1.z - p2.z};
 }
+/////////////////
+function exportData() {
+    let csvContent = csvData.map(e => e.join(",")).join("\n");
 
+    document.write(csvContent);
+    var hiddenElement = document.createElement('a');
+    hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csvContent);
+
+    //provide the name for the CSV file to be downloaded  
+    hiddenElement.download = 'TalkingData.csv';
+  }
 // function FrequencyCalculator(mean){
 //     let i = speakingFrequency.frontOfQueue;
 //     //insert all elements to speakingFrequency

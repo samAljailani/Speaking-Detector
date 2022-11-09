@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
@@ -7,8 +8,12 @@
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
   <style>
-    *{
-        font-size:40px;
+    * {
+      font-size: 40px;
+    }
+
+    button {
+      font-size: 16px;
     }
   </style>
 </head>
@@ -18,11 +23,18 @@
 
 
 
-    
+
 
     <video class="input_video" style="display:none;"></video>
-    <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+    <canvas style="display:block;" class="output_canvas" width="1280px" height="720px"></canvas>
   </div>
-  <script type="module" src="./javascript/speakingDetector.js"></script>
+  <button onclick="startCollectingData = true;">start recording</button>
+  <button onclick="startCollectingData = false;">stop recording</button>
+  <button onclick="exportData();">download</button>
+  <script src="./javascript/audio.js"></script>
+  <script src="./javascript/speakingDetector.js"></script>
+  <script>
+  </script>
 </body>
+
 </html>
