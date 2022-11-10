@@ -166,12 +166,13 @@ function XYZPointDistances(p1,p2){
 function exportData() {
     let csvContent = csvData.map(e => e.join(",")).join("\n");
 
-    document.write(csvContent);
-    var hiddenElement = document.createElement('a');
-    hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csvContent);
-
+    var hiddenElement = document.createElement('a');  
+    hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csvContent);  
+    hiddenElement.target = '_blank';  
+      
     //provide the name for the CSV file to be downloaded  
-    hiddenElement.download = 'TalkingData.csv';
+    hiddenElement.download = 'Talking_Data.csv';  
+    hiddenElement.click();
   }
 // function FrequencyCalculator(mean){
 //     let i = speakingFrequency.frontOfQueue;
