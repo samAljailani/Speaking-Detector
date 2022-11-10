@@ -12,7 +12,7 @@
       font-size: 40px;
     }
 
-    button {
+    button, p {
       font-size: 16px;
     }
   </style>
@@ -23,11 +23,13 @@
 
 
 
-
-
     <video class="input_video" style="display:none;"></video>
     <canvas style="display:block;" class="output_canvas" width="1280px" height="720px"></canvas>
+    
   </div>
+  
+  <p>sensitivity<input id="sensitivity" type="range" min="1" max="100" onchange="changeSensitivity(this.value);" ></p>
+  <p style="font-size:12px">*senetivity decresses as the slider value increases</p>
   <button onclick="startCollectingData = true;">start recording</button>
   <button onclick="startCollectingData = false;">stop recording</button>
   <button onclick="exportData();">download</button>

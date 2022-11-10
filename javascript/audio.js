@@ -2,6 +2,7 @@ let audioContext;
 let fftSize = 256 * 2;
 let prevMean= 0, currMean =0;
 let prevMaxFreq=0, currMaxFreq=0;
+let freqSensitivity = 20;
 let size = 2;
 let freqMeanThreshold = 3 * (512 / fftSize);
 console.log(freqMeanThreshold);
@@ -41,14 +42,15 @@ function audioHasChanged(){
     analyser.getByteFrequencyData(data); 
     currMean         = getMean(data);
     currMaxFreq      = highestFrequency(data);
-    console.log('mean',Math.abs(currMean - prevMean) , 'maxFreq',  Math.abs(currMaxFreq - prevMaxFreq))
-    if(Math.abs(currMaxFreq - prevMaxFreq) > 30 ){
+    let result = false;
+    //console.log( Math.abs(currMaxFreq - prevMaxFreq), freqSensitivity)
+    if(Math.abs(currMaxFreq - prevMaxFreq) > freqSensitivity ){
         //Math.abs(currMean - prevMean) > freqMeanThreshold && 
-       return true;
+       result =  true;
     }
     prevMaxFreq = currMaxFreq;
     prevMean = currMean;
-    return false;
+    return result;
 }
 let source;
 let filter;
@@ -92,4 +94,9 @@ function highestFrequency(arr){
         }
     }
     return max;
+}
+document.getElementById("sensitivity").value = freqSensitivity;
+function changeSensitivity(val){
+    //console.log(val);
+    freqSensitivity = parseInt(val);
 }
