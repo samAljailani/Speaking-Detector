@@ -56,14 +56,6 @@ function onResults(results) {
 
             currentIntervalData.push(XYZPointDistances(landmarks[13], landmarks[14]));
 
-            drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_EYE, {color: '#E0E0E0'});
-            drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_EYEBROW, {color: '#E0E0E0'});
-            drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_IRIS, {color: '#E0E0E0'});
-            drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_EYE, {color: '#E0E0E0'});
-            drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_EYEBROW, {color: '#E0E0E0'});
-            drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_IRIS, {color: '#E0E0E0'});
-            drawConnectors(canvasCtx, landmarks, FACEMESH_TESSELATION, {color: '#C0C0C070', lineWidth: 1});
-            drawConnectors(canvasCtx, landmarks, FACEMESH_FACE_OVAL, {color: '#E0E0E0'});
             drawConnectors(canvasCtx, landmarks, FACEMESH_LIPS, {color: (mouthIsMoving || mouthWasMoving ? '#00FF00': '#E0E0E0')});
         }
     }
