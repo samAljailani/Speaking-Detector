@@ -4,7 +4,8 @@ let prevMean= 0, currMean =0;
 let prevMaxFreq=0, currMaxFreq=0;
 let freqSensitivity = 20;
 let size = 2;
-let freqMeanThreshold = 3 * (512 / fftSize);
+let freqMeanThreshold = 50;
+let currentAudioIntervalData = [];
 console.log(freqMeanThreshold);
 let audioChanged = false;
 let audioRecentlyChanged = false;
@@ -38,7 +39,24 @@ if (navigator.getUserMedia) {
 } else { alert('getUserMedia not supported in this browser.'); }
 //determine if there is a change in audio every 200 millis
 function audioHasChanged(){
-    data         = new Uint8Array(analyser.frequencyBinCount);
+    
+        let result = false;
+        if(currentAudioIntervalData != []){
+            currMean         = AudioMeanCalculator(currentAudioIntervalData);
+            let currMeanThreshold = freqMeanThreshold * currentAudioIntervalData.length;
+            if(Math.abs(currMean - prevMean) > currMeanThreshold ){
+                result = true;
+            }
+            // console.log(currentAudioIntervalData);
+            // console.log(Math.abs(currMean - prevMean), currMean, prevMean, currMeanThreshold);
+            prevMaxFreq = currMaxFreq;
+            prevMean = currMean;
+            line = true;
+            currentAudioIntervalData = [];
+        }
+    return result;
+    
+    /*data         = new Uint8Array(analyser.frequencyBinCount);
     analyser.getByteFrequencyData(data); 
     currMean         = getMean(data);
     currMaxFreq      = highestFrequency(data);
@@ -51,6 +69,25 @@ function audioHasChanged(){
     prevMaxFreq = currMaxFreq;
     prevMean = currMean;
     return result;
+    */
+
+    // if(intervalData != []){
+    //     let result = false;
+    //     currMean         = meanCalculator(intervalData);
+    //     let currMeanThreshold = freqMeanThreshold * intervalData.length;
+    //     if(Math.abs(currMean - prevMean) > currMeanThreshold ){
+    //         result = true;
+    //     }
+    //     prevMaxFreq = currMaxFreq;
+    //     prevMean = currMean;
+    //     line = true;
+    //     intervalData = [];
+    // }
+}
+function getAudioData(){
+    let data         = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(data); 
+    return data;
 }
 let source;
 let filter;
@@ -78,25 +115,26 @@ function process(stream) {
     analyser.connect(dest);
     
 }
-function getMean(arr){
+function AudioMeanCalculator(arr){
     let sum = 0;
-
-    arr.forEach(i =>{
-        sum += i
-    });
+    for(let row = 0; row < arr.length; ++row){
+        arr[row].forEach(i =>{
+            sum += i;
+        });
+    }
+    
     return sum / arr.length;
 }
-function highestFrequency(arr){
-    let max = 0; 
-    for(let i =0; i < arr.length; ++i){
-        if(arr[i] != 0){
-            max = i;
-        }
-    }
-    return max;
-}
-document.getElementById("sensitivity").value = freqSensitivity;
+// function highestFrequency(arr){
+//     let max = 0; 
+//     for(let i =0; i < arr.length; ++i){
+//         if(arr[i] != 0){
+//             max = i;
+//         }
+//     }
+//     return max;
+// }
+document.getElementById("sensitivity").value = freqMeanThreshold;
 function changeSensitivity(val){
-    //console.log(val);
-    freqSensitivity = parseInt(val);
+    freqMeanThreshold = parseInt(val);
 }

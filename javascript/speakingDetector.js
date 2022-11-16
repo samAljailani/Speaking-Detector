@@ -55,7 +55,7 @@ function onResults(results) {
         for (const landmarks of results.multiFaceLandmarks) {
 
             currentIntervalData.push(XYZPointDistances(landmarks[13], landmarks[14]));
-
+            currentAudioIntervalData.push(getAudioData());
             drawConnectors(canvasCtx, landmarks, FACEMESH_LIPS, {color: (mouthIsMoving || mouthWasMoving ? '#00FF00': '#E0E0E0')});
         }
     }
@@ -86,10 +86,6 @@ function onResults(results) {
         }
         currentInterval = new Date().getTime()+ sampleIntervalDuration;
     }
-    // if(new Date().getTime() > cvsExportInterval && row.length == 5){
-    //     exportRow();
-    //     cvsExportInterval = newDate().getTime() + 1000;
-    // }
     //outputing to the canvas whether the client is talking or not
     canvasCtx.rect(10,10, canvasElement.width * .30, 100);
     if(isTalking){
@@ -166,27 +162,3 @@ function exportData() {
     hiddenElement.download = 'Talking_Data.csv';  
     hiddenElement.click();
   }
-// function FrequencyCalculator(mean){
-//     let i = speakingFrequency.frontOfQueue;
-//     //insert all elements to speakingFrequency
-//     for(let point of currentIntervalData){
-//         if(    Math.abs(point.x - mean[0]) >= threshold
-//             || Math.abs(point.y - mean[1]) >= threshold
-//             || Math.abs(point.z - mean[2]) >= threshold){
-
-//                 if(!speakingFrequency.points[i][1]){
-//                     ++speakingFrequency.pointsGreaterThanThreshold;
-//                     speakingFrequency.points[i][1] = true;
-//                 }
-//         }else{
-//             //if the point was greater than the threshold and the new point is not greater than the threshold
-//             // then decrement the number of points greater than the threshold
-//             if(speakingFrequency.points[i][1]){
-//                 --speakingFrequency.pointsGreaterThanThreshold;
-//             }
-//             speakingFrequency.points[i][1] = false;
-//         }
-//         speakingFrequency.points[i][0] = point;
-//         i = i + 1 >= speakingFrequency.maxNumberOfPoints? 0: i + 1;
-//     }
-// }
