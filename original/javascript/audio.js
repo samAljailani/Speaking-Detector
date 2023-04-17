@@ -47,42 +47,12 @@ function audioHasChanged(){
             if(Math.abs(currMean - prevMean) > currMeanThreshold ){
                 result = true;
             }
-            // console.log(currentAudioIntervalData);
-            // console.log(Math.abs(currMean - prevMean), currMean, prevMean, currMeanThreshold);
             prevMaxFreq = currMaxFreq;
             prevMean = currMean;
             line = true;
             currentAudioIntervalData = [];
         }
     return result;
-    
-    /*data         = new Uint8Array(analyser.frequencyBinCount);
-    analyser.getByteFrequencyData(data); 
-    currMean         = getMean(data);
-    currMaxFreq      = highestFrequency(data);
-    let result = false;
-    //console.log( Math.abs(currMaxFreq - prevMaxFreq), freqSensitivity)
-    if(Math.abs(currMaxFreq - prevMaxFreq) > freqSensitivity ){
-        //Math.abs(currMean - prevMean) > freqMeanThreshold && 
-       result =  true;
-    }
-    prevMaxFreq = currMaxFreq;
-    prevMean = currMean;
-    return result;
-    */
-
-    // if(intervalData != []){
-    //     let result = false;
-    //     currMean         = meanCalculator(intervalData);
-    //     let currMeanThreshold = freqMeanThreshold * intervalData.length;
-    //     if(Math.abs(currMean - prevMean) > currMeanThreshold ){
-    //         result = true;
-    //     }
-    //     prevMaxFreq = currMaxFreq;
-    //     prevMean = currMean;
-    //     line = true;
-    //     intervalData = [];
-    // }
 }
 function getAudioData(){
     let data         = new Uint8Array(analyser.frequencyBinCount);
@@ -125,15 +95,7 @@ function AudioMeanCalculator(arr){
     
     return sum / arr.length;
 }
-// function highestFrequency(arr){
-//     let max = 0; 
-//     for(let i =0; i < arr.length; ++i){
-//         if(arr[i] != 0){
-//             max = i;
-//         }
-//     }
-//     return max;
-// }
+
 document.getElementById("sensitivity").value = freqMeanThreshold;
 function changeSensitivity(val){
     freqMeanThreshold = parseInt(val);
